@@ -18,10 +18,11 @@ type AdminServer struct {
 
 // PhishServer represents the Phish server configuration details
 type PhishServer struct {
-	ListenURL string `json:"listen_url"`
-	UseTLS    bool   `json:"use_tls"`
-	CertPath  string `json:"cert_path"`
-	KeyPath   string `json:"key_path"`
+	ListenURL  string `json:"listen_url"`
+	UseTLS     bool   `json:"use_tls"`
+	CertPath   string `json:"cert_path"`
+	KeyPath    string `json:"key_path"`
+	ServerName string `json:"server_name"`
 }
 
 // Config represents the configuration information.
@@ -35,13 +36,14 @@ type Config struct {
 	TestFlag       bool        `json:"test_flag"`
 	ContactAddress string      `json:"contact_address"`
 	Logging        *log.Config `json:"logging"`
+	// Controlls the X-Mailer address
+	ServerName string `json:"server_name"`
+	// The hostname is returned to the reciever. Change this option dynamically
+	HostName string `json:"host_name"`
 }
 
 // Version contains the current gophish version
 var Version = ""
-
-// ServerName is the server type that is returned in the transparency response.
-const ServerName = "gophish"
 
 // LoadConfig loads the configuration from the specified filepath
 func LoadConfig(filepath string) (*Config, error) {
@@ -54,6 +56,9 @@ func LoadConfig(filepath string) (*Config, error) {
 	err = json.Unmarshal(configFile, config)
 	if err != nil {
 		return nil, err
+	}
+	if config.PhishConf.ServerName == "" {
+		config.PhishConf.ServerName = config.ServerName
 	}
 	// Choosing the migrations directory based on the database used.
 	config.MigrationsPath = config.MigrationsPath + config.DBName

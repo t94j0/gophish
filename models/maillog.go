@@ -14,7 +14,6 @@ import (
 	"time"
 
 	"github.com/gophish/gomail"
-	"github.com/gophish/gophish/config"
 	log "github.com/gophish/gophish/logger"
 	"github.com/gophish/gophish/mailer"
 )
@@ -181,7 +180,7 @@ func (m *MailLog) Generate(msg *gomail.Message) error {
 	}
 
 	// Add the transparency headers
-	msg.SetHeader("X-Mailer", config.ServerName)
+	msg.SetHeader("X-Mailer", conf.ServerName)
 	if conf.ContactAddress != "" {
 		msg.SetHeader("X-Gophish-Contact", conf.ContactAddress)
 	}
@@ -311,11 +310,7 @@ func (m *MailLog) generateMessageID() (string, error) {
 	if err != nil {
 		return "", err
 	}
-	h, err := os.Hostname()
-	// If we can't get the hostname, we'll use localhost
-	if err != nil {
-		h = "localhost.localdomain"
-	}
+	h := conf.HostName
 	msgid := fmt.Sprintf("<%d.%d.%d@%s>", t, pid, rint, h)
 	return msgid, nil
 }

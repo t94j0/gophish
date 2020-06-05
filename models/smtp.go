@@ -4,7 +4,6 @@ import (
 	"crypto/tls"
 	"errors"
 	"net/mail"
-	"os"
 	"strconv"
 	"strings"
 	"time"
@@ -114,11 +113,7 @@ func (s *SMTP) GetDialer() (mailer.Dialer, error) {
 		ServerName:         host,
 		InsecureSkipVerify: s.IgnoreCertErrors,
 	}
-	hostname, err := os.Hostname()
-	if err != nil {
-		log.Error(err)
-		hostname = "localhost"
-	}
+	hostname := conf.HostName
 	d.LocalName = hostname
 	return &Dialer{d}, err
 }
